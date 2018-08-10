@@ -1,2 +1,0 @@
-Host: 5.45.109.236 (artemis.monerjan.net)	Status: Up
-Host: 5.45.109.236 (artemis.monerjan.net)	Ports: 24/open/tcp//ssh//OpenSSH 7.2 (FreeBSD 20161230; protocol 2.0)/, 25/open/tcp//tcpwrapped///, 53/open/tcp//domain//ISC BIND 9.11.2-P1/, 135/filtered/tcp//msrpc///, 139/filtered/tcp//netbios-ssn///, 179/filtered/tcp//bgp///, 443/open/tcp//ssl|http//nginx 1.12.2/, 445/filtered/tcp//microsoft-ds///	Ignored State: closed (992)
