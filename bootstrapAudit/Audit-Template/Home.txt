@@ -1,0 +1,12 @@
+Content-Type: text/x-zim-wiki
+Wiki-Format: zim 0.4
+Creation-Date: 2018-06-01T02:10:22-07:00
+
+====== Home ======
+Created Friday 01 June 2018
+
+===== Workflow =====
+[ ] Network level enumeration
+	[ ] [[+Enumeration:1-TCP|TCP]]
+	[ ] [[+Enumeration:2-UDP|UDP]]
+[ ] Application level enumeration
