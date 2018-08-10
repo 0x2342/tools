@@ -91,10 +91,13 @@ function cipherScan()
 	[[ ! -d ./ssl ]] && mkdir ./ssl 
 	for host in *-ssl.txt
 	do
-		#hostname=$(echo $host |cut -f1 -d"-")
+		hostname=$(echo $host |cut -f1 -d"-")
 		while read port
 		do
-			testssl -e -p --logfile ./ssl $(echo $host|cut -f1 -d"-"):$port >/dev/null 2>&1
+			#testssl -e -p --logfile ./ssl $(echo $host|cut -f1 -d"-"):$port >/dev/null 2>&1
+			#openssl s_client -showcerts -connect $(echo $host|cut -f1 -d"-"):$port </dev/null 2>/dev/null|awk '/-----BEGIN/,/-----END/' > ./ssl/$(echo $host|cut -f1 -d"-"):$port.pem
+			testssl -e -p --logfile ./ssl $hostname:$port >/dev/null 2>&1
+			openssl s_client -showcerts -connect $hostname:$port </dev/null 2>/dev/null|awk '/-----BEGIN/,/-----END/' > ./ssl/$hostname:$port.pem
 		done<$host
 	done
 	echo "Done"
@@ -104,4 +107,4 @@ initZim
 createNessusPortlist
 createHostFile
 parseHostFile
-#cipherScan
+cipherScan
