@@ -1,0 +1,10 @@
+nmap-results.gnmap
+portstotal.txt
+*-ports.txt
+*-ssl.txt
+audit/*
+ssl/*
+*.pem
+*.pfx
+*.cer
+*.der
