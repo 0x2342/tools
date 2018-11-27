@@ -8,15 +8,15 @@
 # MM, 2018-04-18
 #
 
-targets=$1
+#targets=$1
 targets=./targets
 
 zimName="audit" #The name of the project
-zimPath="./"
+zimPath="."	#Directory to put the data into
 
 nmap_out=./nmap-results.gnmap
 
-#Use template and create main section for each host in $target
+#Use template and create main section for each host in $target file
 function initZim()
 {
 	echo "[*] Initializing Zim Notebook at $zimPath/$zimName"
@@ -35,9 +35,29 @@ function initZim()
 	find $zimPath/$zimName -type f -name "*.txt" -exec sed -Ei "s/^Created.*[0-9]{4}/Created ${creationDate}/g" {} \;
 }
 
-#Choose whichever you like...
-#sudo nmap -sT -sU -sV -iL $targets -oG ./$nmap_out
-sudo nmap -sS -sV -iL $targets -oG ./$nmap_out
+function doScan()
+{
+	#DEPRECATED#Choose whichever you like...
+	#DEPRECATED#sudo nmap -sT -sU -sV -iL $targets -oG ./$nmap_out
+	#DEPRECATED#nmap -sS -sV -iL $targets -oG ./$nmap_out
+
+	#Below code prepares $nmap_out for a second run of nmap -sT -sV -p<list of previously identified ports>
+	nmap -p- -iL $targets -oG ./$nmap_out >/dev/null 2>/dev/null
+	while read line
+	do
+		hostline=$(echo $line|grep -Eo '^Host.*Ports.*$')
+		if ! [ -z "$hostline" ]
+		then
+			ports=$(echo $hostline|grep -Eo '[0-9]{1,5}/(open|filtered)/.*/' \
+				| grep -Eo '([0-9]{1,5})' \
+				| tr '\n' ',' \
+				| sed -E 's/,$//')
+			host=$(echo $hostline|cut -f2 -d" ")
+			echo "Running nmap on $host and ports $ports"
+			nmap -sT -sV -p $ports $host -oG $host-detail.gnmap
+		fi
+	done<$nmap_out
+}
 
 #Create file of all ports to be fed into Nessus
 function createNessusPortlist()
@@ -64,11 +84,12 @@ done<$targets
 
 function parseHostFile()
 {
-for host in *-ports.txt
+#for host in *-ports.txt
+for host in *-detail.gnmap
 do
 	numports=$(grep -Eo 'Ports.*/' $host|awk -F"/," '{print NF}' )
 	name=$(echo $host|cut -f1 -d"-")
-	tcpenumfile=$zimPath/$zimName/$name/Enumeration/1-TCP.txt
+	tcpenumfile=$zimPath/$zimName/$name/Enumeration/01-TCP-UDP.txt
 	echo -e "\n|Port|State|Proto|Owner|Service|RPC|Version|" >> $tcpenumfile
 	for port in `seq 1 $numports`
 	do
@@ -77,7 +98,7 @@ do
 		sanitized=$(echo $portstring \
 			| sed -E 's/\|/_/g')
 		echo $sanitized \
-			| awk -F"/" '{print "|"$1"|"$2"|"$3"|"$4"|"$5"|"$6"|"$7"|"}' 	>> $tcpenumfile
+			| awk -F"/" '{print "|"$1"|"$2"|"$3"|"$4"|"$5"|"$6"|"$7"|"}' >> $tcpenumfile
 		#If there is an SSL-Port, write to file
 		[[ $portstring =~ .*ssl\|.* ]] && echo $portstring |grep -Eo '^[0-9]{1,5}' > $name-ssl.txt
 	done
@@ -104,7 +125,8 @@ function cipherScan()
 }
 
 initZim
-createNessusPortlist
-createHostFile
+#doScan
+#createNessusPortlist
+#createHostFile
 parseHostFile
-cipherScan
+#cipherScan
