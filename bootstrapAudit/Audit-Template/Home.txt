@@ -7,6 +7,6 @@ Created Friday 01 June 2018
 
 ===== Workflow =====
 [ ] Network level enumeration
-	[ ] [[+Enumeration:1-TCP|TCP]]
-	[ ] [[+Enumeration:2-UDP|UDP]]
+	[ ] [[+Enumeration:01-TCP-UDP|TCP]]
+	[ ] [[+Enumeration:02-App-Layer|UDP]]
 [ ] Application level enumeration
